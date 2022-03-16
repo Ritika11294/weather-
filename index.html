@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body {
+        background-image: url("https://images.unsplash.com/photo-1562742862-512efda35b5b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MzF8fHdlYXRoZXJ8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60");
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+    #search {
+
+        width: 40%;
+        /* border: 1px solid green; */
+        margin: auto;
+        margin-top: 20px;
+
+    }
+
+    #city {
+        width: 70%;
+        padding: 5px 10px;
+
+    }
+
+    button {
+        width: 20%;
+        padding: 5px 10px;
+        cursor: pointer;
+
+    }
+
+    button:hover {
+        background-color: #0d1112;
+        color: white;
+    }
+
+    #main_div {
+        display: flex;
+        grid-template-rows: repeat(1, 1fr);
+        /* grid-template-columns: repeat(3, 1fr); */
+        grid-gap: 25px;
+        margin-top: 40px;
+
+    }
+
+    #left {
+        grid-template-rows: repeat(1, 1fr);
+        width: 70%;
+        /* height: 150px; */
+        border: 1px solid transparent;
+        margin-left: 50px;
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        color: white;
+        opacity: 0.8;
+    }
+
+    #left:hover {
+        opacity: 1
+    }
+
+
+
+
+
+    #right {
+        grid-template-rows: repeat(1, 1fr);
+        width: 100%;
+        margin-left: 30px;
+        border: 1px solid transparent;
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+        color: white;
+        border-radius: 8px;
+        opacity: 0.8;
+    }
+
+    #right:hover {
+        opacity: 1;
+    }
+
+    p {
+        margin-left: 10px;
+        font-size: 20px;
+        font-weight: bolder;
+    }
+
+    h1 {
+        margin-left: 10px;
+    }
+
+
+    #seven_days_data {
+        display: flex;
+        margin-top: 40px;
+        margin-left: 50px;
+        opacity: 0.8;
+        color: white;
+    }
+
+    #seven_days_data:hover {
+        opacity: 1;
+    }
+
+    #map_weather {
+        display: flex;
+        /* margin-top: 20px;  */
+
+    }
+
+    #map {
+        margin-top: 20px;
+        margin-left: 25px;
+    }
+</style>
+
+<body>
+    <div id="search">
+        <input type="text" id="city" placeholder="enter city name">
+        <button onclick="getWeather()">Search</button>
+    </div>
+
+    <div>
+        <div id="map_weather">
+            <div id="weather"></div>
+            <div id="map"></div>
+        </div>
+        <div id="seven_days_data"></div>
+    </div>
+
+
+</body>
+
+</html>
+
+<script>
+    //api.openweathermap.org/data/2.5/weather?q={city name}&appid={API key}
+
+    let key = "28fab9b113c371017801f5420c2f9069";
+
+    async function getWeather() {
+
+        try {
+            let city = document.getElementById("city").value;
+
+            let url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&cnt=7&appid=${key}&units=metrics`;
+            let response = await fetch(url);
+
+            let data = await response.json();
+            let list = data.list
+            showWeather(list)
+            city_map(city)
+            console.log("list:", list);
+
+            // let temp = data.main.temp;
+            // temp = Math.round(temp - 273);
+            // console.log(temp);
+        } catch (err) {
+            console.log("err:", err);
+        }
+
+    }
+
+
+
+    function showWeather(list) {
+        document.querySelector("#seven_days_data").innerHTML = ""
+        list.map(function (element) {
+
+            let div = document.createElement("div");
+            div.setAttribute("id", "seven");
+
+            let temp = document.createElement("p");
+            temp.textContent = element.main.temp - 273 + "°C";
+            console.log(temp);
+
+            let wind = document.createElement("p");
+            wind.textContent = "Wind:  " + element.wind.speed;
+
+
+            let humidity = document.createElement("p");
+            humidity.textContent = "Humidity:  " + element.main.humidity;
+
+            let sealevel = document.createElement("p");
+            sealevel.textContent = "Sealevel:  " + element.main.sea_level;
+
+            div.append(temp, wind, humidity, sealevel);
+            document.querySelector("#seven_days_data").append(div)
+
+
+        });
+        document.querySelector("#weather").innerHTML = ""
+        let div1 = document.createElement("div");
+        div1.setAttribute("id", "main_div");
+
+        let left_div = document.createElement("div")
+        left_div.setAttribute("id", "left");
+
+        let city = document.querySelector("#city").value;
+        let h1 = document.createElement("h1");
+        h1.textContent = city;
+
+        let temp = document.createElement("p");
+        temp.textContent = list[0].main.temp - 273 + "°C";
+        //  console.log(temp);
+
+        let wind = document.createElement("p");
+        wind.textContent = "Wind:  " + list[0].wind.speed;
+
+        let humidity = document.createElement("p");
+        humidity.textContent = "Humidity:  " + list[0].main.humidity;
+
+
+        left_div.append(h1, temp, wind, humidity);
+
+        let right_div = document.createElement("div");
+        right_div.setAttribute("id", "right");
+
+        let cloud = document.createElement("p");
+        cloud.textContent = "Cloud:  " + list[0].clouds.all;
+
+        let pressure = document.createElement("p");
+        pressure.textContent = "Pressure:  " + list[0].main.pressure;
+
+        let min_temp = document.createElement("p");
+        min_temp.textContent = "Min Temperature:  " + list[0].main.temp_min + "°";
+
+        let max_temp = document.createElement("p");
+        max_temp.textContent = "Max Temperature:  " + list[0].main.temp_max + "°";
+
+        let sealevel = document.createElement("p");
+        sealevel.textContent = "Sea Level:  " + list[0].main.sea_level;
+
+        right_div.append(cloud, pressure, min_temp, max_temp, sealevel);
+        div1.append(left_div, right_div)
+
+
+
+
+        document.querySelector("#weather").append(div1)
+    }
+
+
+
+
+
+    function city_map(city) {
+        document.querySelector("#map").innerHTML = ""
+        let div = document.createElement("div");
+        div.setAttribute("id", "map")
+        div.innerHTML = `<iframe width="450" height="400" id="gmap_canvas"
+            src="https://maps.google.com/maps?q=${city}&t=&z=9&ie=UTF8&iwloc=&output=embed" frameborder="0"
+            scrolling="no" marginheight="0" marginwidth="0"></iframe><a href="https://fmovies-online.net"></a><br>`;
+        document.querySelector("#map").append(div);
+    }
+
+</script>
